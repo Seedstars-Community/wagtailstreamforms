@@ -1,7 +1,7 @@
 import uuid
 
 from django import forms
-from django.utils.safestring import mark_safe
+from django.template.loader import render_to_string
 
 from wagtail.core import blocks
 from wagtailstreamforms.models import Form
@@ -10,8 +10,28 @@ from wagtailstreamforms.models import Form
 class InfoBlock(blocks.CharBlock):
     def render_form(self, value, prefix='', errors=None):
         field = self.field
+        widget = field.widget
+
+        widget_attrs = {'id': prefix, 'placeholder': self.label, 'disabled': 'disabled'}
+
         shown_value = value if value else field.help_text
-        return mark_safe('<div style="margin-top:5px;padding:0.9em 1.2em;">%s</div>' % shown_value)
+
+        field_value = field.prepare_value(self.value_for_form(shown_value))
+
+        if hasattr(widget, 'render_with_errors'):
+            widget_html = widget.render_with_errors(prefix, field_value, attrs=widget_attrs, errors=errors)
+            widget_has_rendered_errors = True
+        else:
+            widget_html = widget.render(prefix, field_value, attrs=widget_attrs)
+            widget_has_rendered_errors = False
+
+        return render_to_string('wagtailadmin/block_forms/field.html', {
+            'name': self.name,
+            'classes': self.meta.classname,
+            'widget': widget_html,
+            'field': field,
+            'errors': errors if (not widget_has_rendered_errors) else None
+        })
 
 
 class FormChooserBlock(blocks.ChooserBlock):
