@@ -2,8 +2,18 @@
 Changelog
 *********
 
-Next Release
-------------
+3.6.1
+-----
+
+Republish do to pypi issue
+
+3.6.0
+-----
+
+* Wagtail 2.5 Support
+
+3.5.0
+-----
 
 * Wagtail 2.4 Support
 * Tweak docs to ensure files work in js example (Thanks Aimee Hendrycks)
