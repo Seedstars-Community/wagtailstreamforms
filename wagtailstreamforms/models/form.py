@@ -11,6 +11,7 @@ from wagtail.admin.edit_handlers import (
     MultiFieldPanel,
     StreamFieldPanel
 )
+from wagtail.images.edit_handlers import ImageChooserPanel
 
 from wagtailstreamforms import hooks
 from wagtailstreamforms.conf import get_setting
@@ -29,6 +30,19 @@ class Form(models.Model):
     title = models.CharField(
         _('Title'),
         max_length=255
+    )
+    sub_title = models.CharField(
+        _('Sub_Title'),
+        max_length=255,
+        null=True,
+        blank=True
+    )
+    form_image = models.ForeignKey(
+        'wagtailimages.Image', 
+        null=True, 
+        blank=True, 
+        on_delete=models.SET_NULL, 
+        related_name='+'
     )
     slug = models.SlugField(
         _('Slug'),
@@ -80,6 +94,8 @@ class Form(models.Model):
     settings_panels = [
         FieldPanel('title', classname='full'),
         FieldPanel('slug'),
+        FieldPanel('sub_title', classname='full'),
+        ImageChooserPanel('form_image', classname='full'),
         FieldPanel('template_name'),
         FieldPanel('submit_button_text'),
         MultiFieldPanel([
